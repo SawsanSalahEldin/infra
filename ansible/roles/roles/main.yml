@@ -1,0 +1,3 @@
+- name: rotate-hala-shared-keys
+  include_tasks: rotate-hala-shared-keys.yml
+  tags: rotate-hala-shared-keys
