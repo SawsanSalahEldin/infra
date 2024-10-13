@@ -1,0 +1,26 @@
+---
+- vars:
+    old_ssh_key: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDAM1iOPbCaPPru1sTmINPB+IQsX+VToV467g+mu1DjQN6lBday5lUx9XA6EBY0M/rveTddWOuyaCe9kPZyDQxH7aSu38Vh8JFb28PZxwNy5Vm2ipL0tMyge7qmQyL61BkNLBbXYQMdknPrnREZCvbx+nSwGAaNYRpRgImKKcH8TF6D0p6goBOs6u+3jWWlBcxHsp5o0lmltD4c9OWUfYJW+sd782xcp9cA6WACkFuR3Fb2vpQpo0JzP1RSVyji278L0gjuZkefKy7fOPJdmY8p4gMQf1jUUcTJCj/nXDxkRLd3VqpxdR+bY8bRshLoF8TkTVzCSUhAQIJuu8Ltf/OsDKsezvBnpepexh19xRCfVQKisQTfD5SMnpiZwv5a0rLorGSvLliLr4WWBnhhSWP1jF7otsiqJ11Oy0h80MF1B+2fkbmPIyfJugmD5owF8SLTuFwW/mCqf9szuAXrV9diH5fmEf7aalI6LTCY9adoZ5LQVGp/tQ6tbIYXPJ5hC5M= sawsan@ansible-managment'
+    new_ssh_key: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCT70cyX7p1dBA6WXaC7I26R1+WKHtqAGl8hRe9KOmSehfEBZHf0MTCAo+kVy0uwOgz/R2h9wRcfccEMCqdVUfwwttLi9nV+MpyVxDBG2MNK17f0cfWTQC0QoUJwChqivNfhvwJytdd6R25ZtZ3VhfraeaUQKtXojy7S6lAwl8pBv0dafTNUp03vs0ByNWzp6OitNDrENaJF5/Ow5B7cTMgsTQL1s4sFAoqBI4N6WTvc1pHjsDQzC4yG8Fx+A1K+IJbwObSqYhjLYT8Xt7fzDZYFWsP9s1jkeSkKVTHPUPAMa0znWtW9hxjFYrbkHi377zbnd4xlQCsnhhPoMpcAku+R9Hb25oQMQ0rNLD+BFuPLWkio1G6x4CempOKCl/mOI5c4vmahTiV+g5N3rPbQobLU6Br6MxQiIfOJeffCw5jOK+LPLNj2oghZpZlxQ7eLi7SPvAvJq9zUkvfPvPkRdwp17orJkCjELm0ni+u9AD0CbAICKMUPZcSbk/IGRtUj58= sawsan@ansible-managment'
+
+  become: yes
+  
+  tasks:
+    - name: List current SSH keys
+      shell: cat /home/ubuntu/.ssh/authorized_keys
+      register: sharedkey
+
+    - name: Print current SSH keys
+      debug:
+        var: sharedkey.stdout
+
+    - name: Ensure new SSH key is present
+      lineinfile:
+        path: /home/ubuntu/.ssh/authorized_keys
+        line: "{{ new_ssh_key }}"
+        state: present
+        when: "{{ old_ssh_key }} in sharedkey.stdout"
+
+    - name: Print updated SSH keys
+      debug:
+        var: sharedkey.stdout
